@@ -415,6 +415,12 @@
     if (!window.htmlToImage || !graphic) return;
     if (!state.opponent) { state.dlError = 'Choose an opponent to continue.'; render(); return; }
     if (state.opponent === 'other' && !state.customOpp.trim()) { state.dlError = "Enter the opponent's name."; render(); return; }
+    if (state.venue === 'other') {
+      var vn = state.customName.trim(), va = state.customAddress.trim();
+      if (!vn && !va) { state.dlError = 'Enter the venue name and address.'; render(); return; }
+      if (!vn) { state.dlError = 'Enter the venue name.'; render(); return; }
+      if (!va) { state.dlError = 'Enter the venue address.'; render(); return; }
+    }
     if (state.downloading) return;
     state.downloading = true; state.dlError = ''; render();
     window.htmlToImage.toPng(graphic, {
@@ -631,7 +637,8 @@
 
     // form: download button disabled look
     var customOppName = s.customOpp.trim();
-    var okToDownload = !!s.opponent && (!isOtherOpp || !!customOppName);
+    var venueOk = !isOther || (!!s.customName.trim() && !!s.customAddress.trim());
+    var okToDownload = !!s.opponent && (!isOtherOpp || !!customOppName) && venueOk;
     var dlBtn = $('dlBtn');
     dlBtn.style.opacity = okToDownload ? '1' : '0.5';
     dlBtn.style.cursor = okToDownload ? 'pointer' : 'not-allowed';
