@@ -410,10 +410,18 @@
     if (o.key === 'other') {
       state.opponent = 'other'; state.oppQuery = 'Other'; state.oppOpen = false; state.oppDirty = false; state.dlError = '';
       oppNameFocusPending = true;
+      // render() skips writing the value while the field is focused; set it directly on select.
+      if (oppInput) oppInput.value = 'Other';
       render();
       return;
     }
-    state.opponent = o.key; state.oppQuery = o.name; state.oppOpen = false; state.oppDirty = false; state.dlError = '';
+    // The dropdown passes only { key }, so resolve the display label by key.
+    var sel = oppByKey(o.key);
+    var label = sel ? sel.name : (o.name || '');
+    state.opponent = o.key; state.oppQuery = label; state.oppOpen = false; state.oppDirty = false; state.dlError = '';
+    // Commit the picked name into the field immediately (and blur so it reads as "selected"),
+    // instead of leaving the typed query until the user clicks away.
+    if (oppInput) { oppInput.value = label; oppInput.blur(); }
     render();
   }
 
