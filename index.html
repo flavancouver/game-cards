@@ -178,7 +178,7 @@
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;padding:58px 40px 0 44px;">
               <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:27px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.82);line-height:1;height:37px;display:flex;align-items:center;">Watch Party</div>
               <div id="cardVenueName" style="font-family:'Oswald',sans-serif;font-weight:700;font-size:64px;color:#fff;line-height:1.35;padding-bottom:6px;margin-top:4px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-              <div style="font-family:'Oswald',sans-serif;font-weight:400;font-size:31px;color:#fff;line-height:1.2;margin-top:2px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:baseline;gap:10px;"><i class="fa-solid fa-location-dot" style="font-size:26px;color:rgba(255,255,255,0.7);position:relative;top:-6px;"></i><span id="cardVenueAddr"></span></div>
+              <div style="font-family:'Oswald',sans-serif;font-weight:400;font-size:31px;color:#fff;line-height:1.2;margin-top:2px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:baseline;gap:10px;"><i id="cardVenuePin" class="fa-solid fa-location-dot" style="font-size:26px;color:rgba(255,255,255,0.7);position:relative;top:-6px;"></i><span id="cardVenueAddr"></span></div>
             </div>
           </div>
           <div style="height:302px;background:#000;display:flex;align-items:center;justify-content:space-between;padding:0;position:relative;">
@@ -668,8 +668,16 @@
     var v = VENUES.find(function (x) { return x.key === s.venue; });
     var vName = isOther ? s.customName : (v ? v.name : '');
     var vAddr = isOther ? s.customAddress : (v ? v.address : '');
-    $('cardVenueName').textContent = vName || ' ';
-    $('cardVenueAddr').textContent = vAddr || ' ';
+    // On the "Other" venue, show ghosted placeholder copy until the fields are filled,
+    // so the card never looks broken/empty and the text reads as a hint, not a real place.
+    var nameEmpty = isOther && !s.customName.trim();
+    var addrEmpty = isOther && !s.customAddress.trim();
+    var nameEl = $('cardVenueName'), addrEl = $('cardVenueAddr'), pinEl = $('cardVenuePin');
+    nameEl.textContent = nameEmpty ? 'Venue name' : (vName || ' ');
+    nameEl.style.color = nameEmpty ? 'rgba(255,255,255,0.45)' : '#fff';
+    addrEl.textContent = addrEmpty ? 'Street address' : (vAddr || ' ');
+    addrEl.style.color = addrEmpty ? 'rgba(255,255,255,0.45)' : '#fff';
+    pinEl.style.color = addrEmpty ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.7)';
 
     // card: teams
     var oppSel = (s.opponent && s.opponent !== 'other') ? oppByKey(s.opponent) : null;
